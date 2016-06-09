@@ -46,8 +46,11 @@ defmodule PermissionEx do
     iex> PermissionEx.test_struct_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{PermissionEx.Test.Structs.Page => %PermissionEx.Test.Structs.User{action: :show}})
     true
 
-    iex> PermissionEx.test_struct_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{PermissionEx.Test.Structs.Page => %PermissionEx.Test.Structs.User{ action: :_}})
+    iex> PermissionEx.test_struct_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{PermissionEx.Test.Structs.Page => %PermissionEx.Test.Structs.User{action: :_}})
     true
+
+    iex> PermissionEx.test_struct_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{PermissionEx.Test.Structs.Page => %PermissionEx.Test.Structs.User{action: nil}})
+    false
 
     ```
 
