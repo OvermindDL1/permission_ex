@@ -21,10 +21,11 @@ defmodule PermissionEx.Mixfile do
         main: "getting_started"
         ],
       dialyzer: [
-        plt_add_apps: [:poison],
-        flags: ["-Wno_undefined_callbacks"]
+        #plt_add_apps: [:plug],
+        #flags: ["-Wno_undefined_callbacks"]
         ],
-      deps: deps]
+      deps: deps,
+      ]
   end
 
   defp package do
@@ -55,7 +56,7 @@ defmodule PermissionEx.Mixfile do
       {:dialyxir, "~> 0.3", only: [:dev]},
       {:earmark, "~> 0.2.1", only: [:dev]},
       {:ex_doc, "~> 0.11.5", only: [:dev]},
-      {:poison, "~> 2.0"}
+      # {:poison, "~> 2.0"},
     ]
   end
 end
