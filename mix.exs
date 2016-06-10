@@ -16,10 +16,14 @@ defmodule PermissionEx.Mixfile do
       source_url: "https://github.com/OvermindDL1/permission_ex",
       #homepage_url: "http://YOUR_PROJECT_HOMEPAGE",
       docs: [
-       #logo: "path/to/logo.png",
-       extras: ["README.md": [path: "getting_started", title: "Getting Started"]],
-       main: "getting_started"
-       ],
+        #logo: "path/to/logo.png",
+        extras: ["README.md": [path: "getting_started", title: "Getting Started"]],
+        main: "getting_started"
+        ],
+      dialyzer: [
+        plt_add_apps: [:poison],
+        flags: ["-Wno_undefined_callbacks"]
+        ],
       deps: deps]
   end
 
