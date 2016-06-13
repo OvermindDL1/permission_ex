@@ -29,6 +29,7 @@ faster.
 
   - [x] Permission Matcher to test permissions against a requirement.
   - [x] Admin Permission Matcher to pre-authorize before testing normal permissions.
+  - [ ] This currently works well with the `canada` library, but is there anything that can be done to make it even more simple?
   - [ ] Maybe add some more Permission specialties, such as maybe a `{:range, lower, upper}` test, maybe a function call test?
   - [ ] Maybe add helpers for serializing the structs to/from json by using Poison.
   - [ ] Maybe add helpers to serialize the structs in other ways?  If so then into what ways?
