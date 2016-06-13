@@ -136,24 +136,38 @@ PermissionEx.test_permission(:admin, permissions) # Returns true
     true
 ```
 
-  * If the permission is a `{:any, [permissions]}` then each permission in the
+  * If the permission is a `[:any | permissions]` then each permission in the
     list will be tested individually for if they match the requirement, and if
     any test true then this will be true.
     ```elixir
-    iex> PermissionEx.test_permission(:show, {:any, []})
+    iex> PermissionEx.test_permission(:show, [:any))
     false
 
-    iex> PermissionEx.test_permission(:show, {:any, [:show]})
+    iex> PermissionEx.test_permission(:show, [:any, :show))
     true
 
-    iex> PermissionEx.test_permission(:show, {:any, [:show, :edit]})
+    iex> PermissionEx.test_permission(:show, [:any, :show, :edit))
     true
 
-    iex> PermissionEx.test_permission(:show, {:any, [:edit, :show]})
+    iex> PermissionEx.test_permission(:show, [:any, :edit, :show))
     true
 
-    iex> PermissionEx.test_permission(:show, {:any, [:edit, :otherwise]})
+    iex> PermissionEx.test_permission(:show, [:any, :edit, :otherwise))
     false
+```
+
+  * If an atom and binary fail to match, they will be tested again with the
+    required atom being `to_string`'d, good for if loading from JSON or so, such
+    as in:
+    ```elixir
+    iex> PermissionEx.test_permission(:show, ["any", :edit, :show])
+    true
+
+    iex> PermissionEx.test_permission(:show, ["any", "edit", "show"])
+    true
+
+    iex> PermissionEx.test_permission(:show, "show")
+    true
 ```
 
 
@@ -196,7 +210,7 @@ even against override values such as in:
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{action: true})
     false
 
-    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{action: {:any, [:edit, :show]}})
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{action: [:any, :edit, :show]})
     true
 
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %PermissionEx.Test.Structs.Page{})

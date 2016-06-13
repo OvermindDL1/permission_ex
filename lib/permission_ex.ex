@@ -47,11 +47,11 @@ defmodule PermissionEx do
 
   @typedoc """
   A Permission matcher is either anything, of which it must then match the
-  required permission precisely, or it is a tuple of `{:any, [permission]}` where
+  required permission precisely, or it is a tuple of `[:any | permissions]` where
   each item in the list will be tested against the requirement as a base
   permission, if any are true then this matches.
   """
-  @type permission :: {:any, [permission]} | any
+  @type permission :: [:any | permission] | any
 
 
   @typedoc """
@@ -229,7 +229,7 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{action: true})
     false
 
-    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{action: {:any, [:edit, :show]}})
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %{action: [:any, :edit, :show]})
     true
 
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %PermissionEx.Test.Structs.Page{})
@@ -247,7 +247,7 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %PermissionEx.Test.Structs.Page{action: true})
     false
 
-    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %PermissionEx.Test.Structs.Page{action: {:any, [:edit, :show]}})
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, %PermissionEx.Test.Structs.Page{action: [:any, :edit, :show]})
     true
 
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [:_])
@@ -280,7 +280,7 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{action: true}])
     false
 
-    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{action: {:any, [:edit, :show]}}])
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{action: [:any, :edit, :show]}])
     true
 
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%PermissionEx.Test.Structs.Page{}])
@@ -298,7 +298,7 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%PermissionEx.Test.Structs.Page{action: true}])
     false
 
-    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%PermissionEx.Test.Structs.Page{action: {:any, [:edit, :show]}}])
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%PermissionEx.Test.Structs.Page{action: [:any, :edit, :show]}])
     true
 
     ```
@@ -384,20 +384,44 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission(:show, :edit)
     false
 
-    iex> PermissionEx.test_permission(:show, {:any, []})
+    iex> PermissionEx.test_permission(:show, [:any])
     false
 
-    iex> PermissionEx.test_permission(:show, {:any, [:show]})
+    iex> PermissionEx.test_permission(:show, [:any, :show])
     true
 
-    iex> PermissionEx.test_permission(:show, {:any, [:show, :edit]})
+    iex> PermissionEx.test_permission(:show, [:any, :show, :edit])
     true
 
-    iex> PermissionEx.test_permission(:show, {:any, [:edit, :show]})
+    iex> PermissionEx.test_permission(:show, [:any, :edit, :show])
     true
 
-    iex> PermissionEx.test_permission(:show, {:any, [:edit, :otherwise]})
+    iex> PermissionEx.test_permission(:show, [:any, :edit, :otherwise])
     false
+
+    iex> PermissionEx.test_permission(:show, ["any"])
+    false
+
+    iex> PermissionEx.test_permission(:show, ["any", :show])
+    true
+
+    iex> PermissionEx.test_permission(:show, ["any", :show, :edit])
+    true
+
+    iex> PermissionEx.test_permission(:show, ["any", :edit, :show])
+    true
+
+    iex> PermissionEx.test_permission(:show, ["any", :edit, :otherwise])
+    false
+
+    iex> PermissionEx.test_permission(:show, ["any", "edit", "show"])
+    true
+
+    iex> PermissionEx.test_permission(:show, ["any", "edit", "otherwise"])
+    false
+
+    iex> PermissionEx.test_permission(:show, "show")
+    true
 
     ```
   """
@@ -406,13 +430,23 @@ defmodule PermissionEx do
   def test_permission(:_, _perm)        ,do: true
   def test_permission(_req, :_)         ,do: true
   def test_permission(req, req)         ,do: true
-  def test_permission(_req, {:any, []}) ,do: false
-  def test_permission(required, {:any, [permission | rest]}) do
+  def test_permission(_req, [:any])     ,do: false
+  def test_permission(_req, [])         ,do: false
+
+  def test_permission(req, perm) when is_atom(req) and is_binary(perm) do
+    to_string(req) === perm
+  end
+
+  def test_permission(_req, "_")        ,do: true # test_permission(req, :_)
+  def test_permission(req, ["any"|p])   ,do: test_permission(req, [:any|p])
+
+  def test_permission(required, [:any, permission | rest]) do
     case test_permission(required, permission) do
       true -> true
-      false -> test_permission(required, {:any, rest})
+      false -> test_permission(required, [:any | rest])
     end
   end
+
   def test_permission(_required, _permission) do
     false
   end
