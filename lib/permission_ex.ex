@@ -310,7 +310,7 @@ defmodule PermissionEx do
   def test_permissions(_required, false) ,do: false
   def test_permissions(_required, nil)   ,do: false
   def test_permissions(_required, [])    ,do: false
-  def test_permissions(_required, %{}=m) when map_size(m)==0, do: false
+  def test_permissions(_required, %{} = m) when map_size(m) == 0, do: false
   def test_permissions(required, [permissions | rest]) do
     case test_permissions(required, permissions) do
       true -> true
