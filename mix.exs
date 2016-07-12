@@ -7,7 +7,7 @@ defmodule PermissionEx.Mixfile do
 
   def project do
     [ app: :permission_ex,
-      version: "0.3.0",
+      version: "0.4.0",
       description: @description,
       package: package,
       elixir: "~> 1.2",

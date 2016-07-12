@@ -301,6 +301,18 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%PermissionEx.Test.Structs.Page{action: [:any, :edit, :show]}])
     true
 
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{"action" => :edit}])
+    false
+
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{"action" => :show}])
+    true
+
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{"action" => :_}])
+    true
+
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{"action" => "_"}])
+    true
+
     ```
   """
   @spec test_permissions(struct, permissions) :: boolean
@@ -321,7 +333,9 @@ defmodule PermissionEx do
     required
     |> Map.from_struct
     |> Enum.any?(fn {tag, req} ->
-      perm = Map.get(perms, tag, nil)
+      # perm = Map.get(perms, tag, nil)
+      perm = Map.get_lazy(perms, tag, fn ->
+        Map.get(perms, to_string(tag), nil) end)
       test_permission(req, perm)
     end)
   end
