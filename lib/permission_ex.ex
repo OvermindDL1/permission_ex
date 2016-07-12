@@ -340,6 +340,7 @@ defmodule PermissionEx do
    * If both are identical, then it is true.
    * If the permission is the tuple `{:any, [<permissions>]}` then each
      permission in the list is tested against the requirement
+   * If the permission is "_" is equivilent to :_
 
   ## Examples
 
@@ -423,12 +424,19 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission(:show, "show")
     true
 
+    iex> PermissionEx.test_permission(:show, "_")
+    true
+
+    iex> PermissionEx.test_permission(nil, "_")
+    true
+
     ```
   """
   @spec test_permission(any, permission) :: boolean
   def test_permission(required, permission)
   def test_permission(:_, _perm)        ,do: true
   def test_permission(_req, :_)         ,do: true
+  def test_permission(_req, "_")        ,do: true # test_permission(req, :_)
   def test_permission(req, req)         ,do: true
   def test_permission(_req, [:any])     ,do: false
   def test_permission(_req, [])         ,do: false
@@ -437,7 +445,6 @@ defmodule PermissionEx do
     to_string(req) === perm
   end
 
-  def test_permission(_req, "_")        ,do: true # test_permission(req, :_)
   def test_permission(req, ["any"|p])   ,do: test_permission(req, [:any|p])
 
   def test_permission(required, [:any, permission | rest]) do
