@@ -47,7 +47,7 @@ defmodule PermissionEx do
 
   @typedoc """
   A Permission matcher is either anything, of which it must then match the
-  required permission precisely, or it is a list starting with :any such as
+  required permission precisely, or it is a list starting with `:any` such as
   `[:any | permissions]` where each item in the list will be tested against
   the requirement as a base permission, if any are true then this matches.
   """
