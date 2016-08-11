@@ -352,9 +352,9 @@ defmodule PermissionEx do
 
    * If either are `:_` then it is true.
    * If both are identical, then it is true.
-   * If the permission is the tuple `{:any, [<permissions>]}` then each
+   * If the permission is the list starting with `:any` such as `[:any | <permissions>]` then each
      permission in the list is tested against the requirement
-   * If the permission is "_" is equivilent to :_
+   * If the permission is "_" is equivilent to `:_`
 
   ## Examples
 
