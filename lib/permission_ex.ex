@@ -344,8 +344,7 @@ defmodule PermissionEx do
   def test_permissions(required, %{} = perms) do
     required
     |> Map.from_struct
-    |> Enum.any?(fn {tag, req} ->
-      # perm = Map.get(perms, tag, nil)
+    |> Enum.all?(fn {tag, req} ->
       perm = Map.get_lazy(perms, tag, fn ->
         Map.get(perms, to_string(tag), nil) end)
       test_permission(req, perm)
