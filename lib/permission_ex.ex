@@ -171,6 +171,12 @@ defmodule PermissionEx do
     iex> PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{PermissionEx.Test.Structs.PagePerm => [%PermissionEx.Test.Structs.PagePerm{action: :_}]})
     false
 
+    iex> PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{"Elixir.PermissionEx.Test.Structs.PageReq" => [%PermissionEx.Test.Structs.PagePerm{action: :_}]})
+    true
+
+    iex> PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{"Elixir.PermissionEx.Test.Structs.PagePerm" => [%PermissionEx.Test.Structs.PagePerm{action: :_}]})
+    false
+
     ```
 
   """
@@ -182,11 +188,17 @@ defmodule PermissionEx do
     # TODO:  Perhaps add a blacklist permission here too?
     case test_permissions(required, Map.get(admin_tags, tag, nil)) do
       true -> true
-      false -> test_permissions(required, Map.get(tagged_perm_map, tag, nil))
+      false ->
+        perms = Map.get_lazy(tagged_perm_map, tag, fn ->
+          Map.get(tagged_perm_map, to_string(tag), nil) end)
+        test_permissions(required, perms)
     end
   end
   def test_tagged_permissions(%{__struct__: tag} = required, %{} = tagged_perm_map) do
-    test_permissions(required, Map.get(tagged_perm_map, tag, nil))
+    # test_permissions(required, Map.get(tagged_perm_map, tag, nil))
+    perms = Map.get_lazy(tagged_perm_map, tag, fn ->
+      Map.get(tagged_perm_map, to_string(tag), nil) end)
+    test_permissions(required, perms)
   end
 
 

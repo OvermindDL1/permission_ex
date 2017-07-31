@@ -140,19 +140,19 @@ PermissionEx.test_permission(:admin, permissions) # Returns true
     list will be tested individually for if they match the requirement, and if
     any test true then this will be true.
     ```elixir
-    iex> PermissionEx.test_permission(:show, [:any))
+    iex> PermissionEx.test_permission(:show, [:any])
     false
 
-    iex> PermissionEx.test_permission(:show, [:any, :show))
+    iex> PermissionEx.test_permission(:show, [:any, :show])
     true
 
-    iex> PermissionEx.test_permission(:show, [:any, :show, :edit))
+    iex> PermissionEx.test_permission(:show, [:any, :show, :edit])
     true
 
-    iex> PermissionEx.test_permission(:show, [:any, :edit, :show))
+    iex> PermissionEx.test_permission(:show, [:any, :edit, :show])
     true
 
-    iex> PermissionEx.test_permission(:show, [:any, :edit, :otherwise))
+    iex> PermissionEx.test_permission(:show, [:any, :edit, :otherwise])
     false
 ```
 

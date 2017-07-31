@@ -7,9 +7,9 @@ defmodule PermissionEx.Mixfile do
 
   def project do
     [ app: :permission_ex,
-      version: "0.4.0",
+      version: "0.4.1",
       description: @description,
-      package: package,
+      package: package(),
       elixir: "~> 1.2",
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
@@ -24,7 +24,7 @@ defmodule PermissionEx.Mixfile do
         #plt_add_apps: [:plug],
         #flags: ["-Wno_undefined_callbacks"]
         ],
-      deps: deps,
+      deps: deps(),
       ]
   end
 
