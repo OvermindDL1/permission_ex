@@ -209,8 +209,8 @@ or an override that is tested before the main permissions are tested.
   want, such as in:
   
     ```elixir
-    iex> PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{PermissionEx.Test.Structs.PageReq => [%PermissionEx.Test.Structs.PagePerm{action: :_}]}) # => true
-    iex> PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{PermissionEx.Test.Structs.PagePerm => [%PermissionEx.Test.Structs.PagePerm{action: :_}]}) # => false
+    PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{PermissionEx.Test.Structs.PageReq => [%PermissionEx.Test.Structs.PagePerm{action: :_}]}) # => true
+    PermissionEx.test_tagged_permissions(%PermissionEx.Test.Structs.PageReq{action: :show}, %{PermissionEx.Test.Structs.PagePerm => [%PermissionEx.Test.Structs.PagePerm{action: :_}]}) # => false
     ```
 
 * If there is an `:admin` key on the struct, then it is checked first, this
