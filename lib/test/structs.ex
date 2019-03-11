@@ -1,4 +1,4 @@
-
+if Mix.env() == :test do
 defmodule PermissionEx.Test.Structs.User do
   @moduledoc false
   # @derive [Poison.Encoder]
@@ -22,3 +22,5 @@ defmodule PermissionEx.Test.Structs.PagePerm do
   # @derive [Poison.Encoder]
   defstruct action: nil
 end
+end
+

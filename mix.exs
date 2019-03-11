@@ -7,7 +7,7 @@ defmodule PermissionEx.Mixfile do
 
   def project do
     [ app: :permission_ex,
-      version: "0.5.0",
+      version: "0.5.1",
       description: @description,
       package: package(),
       elixir: "~> 1.2",
@@ -54,8 +54,8 @@ defmodule PermissionEx.Mixfile do
   defp deps do
     [ {:credo, "~> 0.3", only: [:dev]},
       {:dialyxir, "~> 0.3", only: [:dev]},
-      {:earmark, "~> 0.2.1", only: [:dev]},
-      {:ex_doc, "~> 0.11.5", only: [:dev]},
+      #{:earmark, "~> 0.2.1", only: [:dev]},
+      {:ex_doc, "~> 0.19.0", only: [:dev]},
       # {:poison, "~> 2.0"},
     ]
   end

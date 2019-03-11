@@ -325,6 +325,9 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: :show}, [%{"action" => "_"}])
     true
 
+    iex> PermissionEx.test_permissions(%PermissionEx.Test.Structs.Page{action: [:something, 123]}, [%{"action" => ["something", 123]}])
+    true
+
     ```
   """
   @spec test_permissions(struct, permissions) :: boolean
@@ -455,6 +458,9 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission(nil, "_")
     true
 
+    iex> PermissionEx.test_permission([:show, 123], ["show", 123])
+    true
+
     ```
   """
   @spec test_permission(any, permission) :: boolean
@@ -477,6 +483,11 @@ defmodule PermissionEx do
       true -> true
       false -> test_permission(required, [:any | rest])
     end
+  end
+
+  def test_permission(req, perm) when is_list(req) and is_list(perm) and length(req) == length(perm) do
+    Enum.zip(req, perm)
+    |> Enum.all?(fn {req, perm} -> test_permission(req, perm) end)
   end
 
   def test_permission(_required, _permission) do
