@@ -11,7 +11,7 @@ installed by adding `permission_ex` to the list of dependencies in `mix.exs`:
 
 ```elixir
 def deps do
-  [{:permission_ex, "~> 0.0.1"}]
+  [{:permission_ex, "~> 0.5.1"}]
 end
 ```
 

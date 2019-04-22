@@ -16,9 +16,8 @@ defmodule PermissionEx.Mixfile do
       source_url: "https://github.com/OvermindDL1/permission_ex",
       #homepage_url: "http://YOUR_PROJECT_HOMEPAGE",
       docs: [
-        #logo: "path/to/logo.png",
-        extras: ["README.md": [path: "getting_started", title: "Getting Started"]],
-        main: "getting_started"
+        extras: ["README.md"],
+        main: "readme"
         ],
       dialyzer: [
         #plt_add_apps: [:plug],
@@ -52,10 +51,10 @@ defmodule PermissionEx.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [ {:credo, "~> 0.3", only: [:dev]},
-      {:dialyxir, "~> 0.3", only: [:dev]},
-      #{:earmark, "~> 0.2.1", only: [:dev]},
-      {:ex_doc, "~> 0.19.0", only: [:dev]},
+    [ {:credo, "~> 0.3", only: [:dev], runtime: false},
+      {:dialyxir, "~> 0.3", only: [:dev], runtime: false},
+      #{:earmark, "~> 0.2.1", only: [:dev], runtime: false},
+      {:ex_doc, "~> 0.20.0", only: [:dev], runtime: false},
       # {:poison, "~> 2.0"},
     ]
   end
