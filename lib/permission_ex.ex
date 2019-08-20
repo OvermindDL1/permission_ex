@@ -1,6 +1,6 @@
 defmodule PermissionEx do
   @moduledoc """
-  Main module and interface to testing permissions.
+  Main module and interface to testing permissions.
 
   If you wish to test a single permission for equality, then you would use
   `PermissionEx.test_permission/2`.
@@ -368,7 +368,7 @@ defmodule PermissionEx do
    * If both are identical, then it is true.
    * If the permission is the list starting with `:any` such as `[:any | <permissions>]` then each
      permission in the list is tested against the requirement
-   * If the permission is "_" is equivilent to `:_`
+   * The permission "_" is equivilent to `:_`
 
   ## Examples
 
@@ -377,10 +377,25 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission(:_, :_)
     true
 
+    iex> PermissionEx.test_permission(:_, "_")
+    true
+
+    iex> PermissionEx.test_permission("_", :_)
+    true
+
+    iex> PermissionEx.test_permission("_", "_")
+    true
+
     iex> PermissionEx.test_permission(:_, nil)
     true
 
     iex> PermissionEx.test_permission(nil, :_)
+    true
+
+    iex> PermissionEx.test_permission("_", nil)
+    true
+
+    iex> PermissionEx.test_permission(nil, "_")
     true
 
     iex> PermissionEx.test_permission(nil, nil)
@@ -461,11 +476,27 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission([:show, 123], ["show", 123])
     true
 
+    iex> PermissionEx.test_permission(%{}, %{})
+    true
+
+    iex> PermissionEx.test_permission(%{action: :show}, %{action: "show"})
+    true
+
+    iex> PermissionEx.test_permission(%{action: "show"}, %{action: "show"})
+    true
+
+    iex> PermissionEx.test_permission(%{action: :show}, %{"action" => :show})
+    true
+
+    iex> PermissionEx.test_permission(%{"action" => :show}, %{action: :show})
+    true
+
     ```
   """
   @spec test_permission(any, permission) :: boolean
   def test_permission(required, permission)
   def test_permission(:_, _perm)        ,do: true
+  def test_permission("_", _perm)       ,do: true
   def test_permission(_req, :_)         ,do: true
   def test_permission(_req, "_")        ,do: true # test_permission(req, :_)
   def test_permission(req, req)         ,do: true
@@ -488,6 +519,23 @@ defmodule PermissionEx do
   def test_permission(req, perm) when is_list(req) and is_list(perm) and length(req) == length(perm) do
     Enum.zip(req, perm)
     |> Enum.all?(fn {req, perm} -> test_permission(req, perm) end)
+  end
+
+  def test_permission(req, perm) when is_map(req) and is_map(perm) do
+    Enum.all?(req, fn
+      {key, value} when is_binary(key) ->
+        case perm[key] do
+          nil ->
+            case Enum.find(perm, fn {k, _v} -> to_string(k) == key end) do
+              nil -> false
+              {_otherk, other} -> test_permission(value, other)
+            end
+          other -> test_permission(value, other)
+        end
+      {key, value} -> # when is_atom(key) ->
+        other = perm[key] || perm[to_string(key)]
+        test_permission(value, other)
+    end)
   end
 
   def test_permission(_required, _permission) do
