@@ -464,6 +464,18 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission(:show, ["any", "edit", "otherwise"])
     false
 
+    iex> PermissionEx.test_permission(:show, [:many])
+    false
+
+    iex> PermissionEx.test_permission(:show, [:many, :show, :edit])
+    true
+
+    iex> PermissionEx.test_permission([:show, :edit], [:many, :show, :edit])
+    true
+
+    iex> PermissionEx.test_permission([:edit, :show], [:many, :show, :edit])
+    true
+
     iex> PermissionEx.test_permission(:show, "show")
     true
 
@@ -491,6 +503,12 @@ defmodule PermissionEx do
     iex> PermissionEx.test_permission(%{"action" => :show}, %{action: :show})
     true
 
+    iex> PermissionEx.test_permission(%{action: :show}, %{action: [:any, :show, :index]})
+    true
+
+    iex> PermissionEx.test_permission(%{action: :none}, %{action: [:any, :show, :index]})
+    false
+
     ```
   """
   @spec test_permission(any, permission) :: boolean
@@ -508,12 +526,17 @@ defmodule PermissionEx do
   end
 
   def test_permission(req, ["any"|p])   ,do: test_permission(req, [:any|p])
+  def test_permission(req, ["many"|p]), do: test_permission(req, [:many|p])
 
   def test_permission(required, [:any, permission | rest]) do
     case test_permission(required, permission) do
       true -> true
       false -> test_permission(required, [:any | rest])
     end
+  end
+
+  def test_permission(required, [:many | perms]) do
+    Enum.all?(List.wrap(required), fn req -> Enum.any?(perms, &test_permission(req, &1)) end)
   end
 
   def test_permission(req, perm) when is_list(req) and is_list(perm) and length(req) == length(perm) do
